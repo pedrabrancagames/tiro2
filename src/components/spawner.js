@@ -3,9 +3,43 @@ AFRAME.registerComponent('spawner', {
         interval: { type: 'number', default: 1000 }, // Checa a cada 1 segundo
         range: { type: 'number', default: 5 },
         maxFish: { type: 'number', default: 4 },
+        maxTrash: { type: 'number', default: 3 }
+    },
+
+    init: function () {
         this.timer = 0;
-    }
-},
+
+        this.fishModels = [
+            'carangueijo.glb', 'peixe_palhaco.glb',
+            'peixe.glb', 'peixe_arcoires.glb', 'carpa.glb', 'tilapia.glb'
+        ];
+
+        this.trashModels = [
+            'lixo_lata.glb', 'lixo_saco.glb', 'lixo_balde.glb', 'lixo_lata2.glb',
+            'lixo_lata4.glb', 'lixo_lata5.glb', 'lixo_garrafa.glb',
+            'lixo_garrafa2.glb'
+        ];
+
+        // Escalas personalizadas
+        this.customScales = {
+            'peixe_palhaco.glb': '0.01 0.01 0.01',
+            'lixo_lata5.glb': '0.006 0.006 0.006',
+            'lixo_garrafa2.glb': '0.025 0.025 0.025',
+            'lixo_saco.glb': '0.015 0.015 0.015',
+            'lixo_lata4.glb': '0.1 0.1 0.1',
+            'lixo_garrafa.glb': '0.025 0.025 0.025',
+            'lixo_balde.glb': '1.0 1.0 1.0',
+            'lixo_lata2.glb': '1.0 1.0 1.0' // Aumentado 2x (era 0.5 padrão)
+        };
+    },
+
+    tick: function (time, timeDelta) {
+        this.timer += timeDelta;
+        if (this.timer >= this.data.interval) {
+            this.trySpawn();
+            this.timer = 0;
+        }
+    },
 
     trySpawn: function () {
         const fishCount = document.querySelectorAll('.fish').length;
