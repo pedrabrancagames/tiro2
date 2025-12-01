@@ -22,14 +22,15 @@ AFRAME.registerComponent('spawner', {
 
         // Escalas personalizadas
         this.customScales = {
-            'peixe_palhaco.glb': '0.03 0.03 0.03', // Reduzido 3x (era 0.1)
+            'peixe_palhaco.glb': '0.01 0.01 0.01', // Reduzido 3x novamente (era 0.03)
             'peixe_betta.glb': '0.25 0.25 0.25',
-            'lixo_lata5.glb': '0.012 0.012 0.012', // Reduzido 4x (era 0.05)
+            'lixo_lata5.glb': '0.006 0.006 0.006', // Reduzido 2x (era 0.012)
             'lixo_garrafa2.glb': '0.025 0.025 0.025',
-            'lixo_saco.glb': '0.03 0.03 0.03', // Reduzido 3x (era 0.1)
+            'lixo_saco.glb': '0.015 0.015 0.015', // Reduzido 2x (era 0.03)
             'lixo_lata3.glb': '0.1 0.1 0.1',
             'lixo_lata4.glb': '0.1 0.1 0.1',
-            'lixo_garrafa.glb': '0.025 0.025 0.025'
+            'lixo_garrafa.glb': '0.025 0.025 0.025',
+            'lixo_balde.glb': '1.0 1.0 1.0' // Aumentado 2x (era 0.5 padrão)
         };
     },
 
