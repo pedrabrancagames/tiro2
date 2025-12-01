@@ -8,7 +8,6 @@ AFRAME.registerComponent('spawner', {
 
     init: function () {
         this.timer = 0;
-        // this.targets = []; // Removed as per new code
 
         this.fishModels = [
             'peixe_betta.glb', 'carangueijo.glb', 'tubarao.glb', 'peixe_palhaco.glb',
@@ -16,9 +15,31 @@ AFRAME.registerComponent('spawner', {
         ];
 
         this.trashModels = [
+            'lixo_lata.glb', 'lixo_saco.glb', 'lixo_balde.glb', 'lixo_lata2.glb',
+            'lixo_lata3.glb', 'lixo_lata4.glb', 'lixo_lata5.glb', 'lixo_garrafa.glb',
+            'lixo_garrafa2.glb'
+        ];
+
+        // Escalas personalizadas
+        this.customScales = {
+            'peixe_palhaco.glb': '0.03 0.03 0.03', // Reduzido 3x (era 0.1)
+            'peixe_betta.glb': '0.25 0.25 0.25',
+            'lixo_lata5.glb': '0.012 0.012 0.012', // Reduzido 4x (era 0.05)
+            'lixo_garrafa2.glb': '0.025 0.025 0.025',
+            'lixo_saco.glb': '0.03 0.03 0.03', // Reduzido 3x (era 0.1)
+            'lixo_lata3.glb': '0.1 0.1 0.1',
+            'lixo_lata4.glb': '0.1 0.1 0.1',
+            'lixo_garrafa.glb': '0.025 0.025 0.025'
+        };
+    },
+
+    tick: function (time, timeDelta) {
+        this.timer += timeDelta;
+        if (this.timer >= this.data.interval) {
+            this.trySpawn();
             this.timer = 0;
-    }
-},
+        }
+    },
 
     trySpawn: function () {
         const fishCount = document.querySelectorAll('.fish').length;
@@ -84,7 +105,6 @@ AFRAME.registerComponent('spawner', {
 
         this.el.sceneEl.appendChild(el);
     },
-    // Removed extra '}' here
 
     getRandomColor: function () {
         return '#FFFFFF';
