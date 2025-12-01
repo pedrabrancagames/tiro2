@@ -7,6 +7,17 @@ AFRAME.registerComponent('spawner', {
     init: function () {
         this.timer = 0;
         this.targets = [];
+
+        this.fishModels = [
+            'peixe_betta.glb', 'carangueijo.glb', 'tubarao.glb', 'peixe_palhaco.glb',
+            'peixe.glb', 'peixe_arcoires.glb', 'carpa.glb', 'tilapia.glb'
+        ];
+
+        this.trashModels = [
+            'lixo_lata.glb', 'lixo_saco.glb', 'lixo_balde.glb', 'lixo_lata2.glb',
+            'lixo_lata3.glb', 'lixo_lata4.glb', 'lixo_lata5.glb', 'lixo_garrafa.glb',
+            'lixo_garrafa2.glb'
+        ];
     },
 
     tick: function (time, timeDelta) {
@@ -19,45 +30,49 @@ AFRAME.registerComponent('spawner', {
 
     spawn: function () {
         const el = document.createElement('a-entity');
+        const isFish = Math.random() > 0.5; // 50% de chance
 
-        // Usar modelo GLB
-        // O usuário deve colocar o arquivo 'enemy.glb' em public/models/
-        el.setAttribute('gltf-model', 'url(/models/enemy.glb)');
+        let modelName;
 
-        // Tocar todas as animações disponíveis no modelo (loop)
-        el.setAttribute('animation-mixer', '');
+        if (isFish) {
+            modelName = this.fishModels[Math.floor(Math.random() * this.fishModels.length)];
+            el.classList.add('fish'); // Classe para identificar amigo
+            el.setAttribute('animation-mixer', ''); // Peixes são animados
+            el.setAttribute('scale', '0.5 0.5 0.5');
+        } else {
+            modelName = this.trashModels[Math.floor(Math.random() * this.trashModels.length)];
+            el.classList.add('trash'); // Classe para identificar inimigo (lixo)
+            el.setAttribute('scale', '0.5 0.5 0.5');
+        }
 
-        // Ajuste de escala (pode variar dependendo do modelo, deixei um padrão razoável)
-        el.setAttribute('scale', '0.5 0.5 0.5');
-
-        // Classe para detecção
-        el.classList.add('enemy');
+        el.setAttribute('gltf-model', `url(/models/${modelName})`);
 
         // Posição Aleatória
         const angle = Math.random() * Math.PI * 2;
-        const radius = 2 + Math.random() * (this.data.range - 2); // Entre 2m e range
+        const radius = 2 + Math.random() * (this.data.range - 2);
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
-        const y = 1 + Math.random() * 1.5; // Altura entre 1m e 2.5m
+        const y = 1 + Math.random() * 1.5;
 
         el.setAttribute('position', { x, y, z });
 
-        // Animação de flutuar (mantida para dar movimento extra)
+        // Animação de flutuar
         el.setAttribute('animation', {
             property: 'position',
             to: `${x} ${y + 0.2} ${z}`,
             dir: 'alternate',
-            dur: 2000,
+            dur: 2000 + Math.random() * 1000,
             loop: true,
             easing: 'easeInOutSine'
         });
 
-        // Adicionar à cena
+        // Rotação aleatória inicial
+        el.setAttribute('rotation', `0 ${Math.random() * 360} 0`);
+
         this.el.sceneEl.appendChild(el);
     },
 
     getRandomColor: function () {
-        const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'];
-        return colors[Math.floor(Math.random() * colors.length)];
+        return '#FFFFFF';
     }
 });

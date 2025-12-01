@@ -26,7 +26,7 @@
     <!-- Câmera com Raycaster para o tiro -->
     <a-entity id="rig">
       <a-camera position="0 1.6 0" look-controls="enabled: false">
-        <a-entity id="weapon" weapon raycaster="objects: .enemy; far: 20; showLine: false"
+        <a-entity id="weapon" weapon raycaster="objects: .trash, .fish; far: 20; showLine: false"
           position="0 0 -0.5"></a-entity>
         <a-cursor visible="false"></a-cursor>
       </a-camera>

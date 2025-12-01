@@ -61,19 +61,34 @@ AFRAME.registerComponent('weapon', {
             // Remover projétil
             if (projectile.parentNode) projectile.parentNode.removeChild(projectile);
 
-            // Se tinha um alvo, destruir agora (ao impacto)
-            if (targetEl && targetEl.classList.contains('enemy')) {
-                this.destroyTarget(targetEl);
+            // Se tinha um alvo, processar impacto
+            if (targetEl) {
+                this.processHit(targetEl);
             }
         }, duration);
     },
 
-    destroyTarget: function (el) {
-        // Adicionar componente de explosão e remover depois
-        el.setAttribute('explosion', '');
+    processHit: function (el) {
+        if (el.classList.contains('trash')) {
+            // Lixo: Explode e ganha pontos
+            el.setAttribute('explosion', '');
+            this.el.sceneEl.emit('score-up');
+        } else if (el.classList.contains('fish')) {
+            // Peixe: Não explode, perde pontos (penalidade)
+            this.el.sceneEl.emit('score-down');
 
-        // Atualizar pontuação via evento
-        this.el.sceneEl.emit('score-up');
+            // Fazer o peixe fugir rápido
+            el.setAttribute('animation__flee', {
+                property: 'position',
+                to: `${el.object3D.position.x} ${el.object3D.position.y + 5} ${el.object3D.position.z}`,
+                dur: 500,
+                easing: 'easeInQuad'
+            });
+            // Remover depois de fugir
+            setTimeout(() => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 500);
+        }
     },
 
     createMuzzleFlash: function () {
