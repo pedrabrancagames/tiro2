@@ -2,9 +2,13 @@ AFRAME.registerComponent('weapon', {
     init: function () {
         this.shootBtn = document.getElementById('shoot-btn');
         this.shootBtn.addEventListener('click', this.shoot.bind(this));
+        this.soundSystem = this.el.sceneEl.systems['sound-manager'];
     },
 
     shoot: function () {
+        // Tocar som de tiro
+        if (this.soundSystem) this.soundSystem.playSound('shoot');
+
         const raycaster = this.el.components.raycaster;
         raycaster.refreshObjects();
         const intersections = raycaster.intersections;
@@ -63,19 +67,23 @@ AFRAME.registerComponent('weapon', {
 
             // Se tinha um alvo, processar impacto
             if (targetEl) {
-                this.processHit(targetEl);
+                this.processHit(targetEl, end);
             }
         }, duration);
     },
 
-    processHit: function (el) {
+    processHit: function (el, hitPosition) {
         if (el.classList.contains('trash')) {
             // Lixo: Explode e ganha pontos
             el.setAttribute('explosion', '');
-            this.el.sceneEl.emit('score-up');
+            // Emitir evento com detalhes para o game-manager criar o texto flutuante
+            this.el.sceneEl.emit('score-up', { position: hitPosition });
         } else if (el.classList.contains('fish')) {
             // Peixe: Não explode, perde pontos (penalidade)
-            this.el.sceneEl.emit('score-down');
+            this.el.sceneEl.emit('score-down', { position: hitPosition });
+
+            // Som de splash/erro
+            if (this.soundSystem) this.soundSystem.playSound('splash');
 
             // Fazer o peixe fugir rápido
             el.setAttribute('animation__flee', {
