@@ -16,7 +16,7 @@
   </div>
 
   <a-scene renderer="alpha: true; antialias: true; colorManagement: true;" xr-mode-ui="enabled: true; XRMode: ar;"
-    ar-hit-test="target: #reticle; type: map;" background="color: transparent">
+    webxr="optionalFeatures: dom-overlay; overlayElement: #ui-layer;" ar-hit-test="target: #reticle; type: map;">
     <!-- Gerenciador do Jogo -->
     <a-entity game-manager></a-entity>
 
