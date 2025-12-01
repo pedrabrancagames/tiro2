@@ -20,16 +20,15 @@ AFRAME.registerComponent('spawner', {
     spawn: function () {
         const el = document.createElement('a-entity');
 
-        // Geometria e Material
-        el.setAttribute('geometry', {
-            primitive: 'icosahedron',
-            radius: 0.3
-        });
-        el.setAttribute('material', {
-            color: this.getRandomColor(),
-            metalness: 0.5,
-            roughness: 0.2
-        });
+        // Usar modelo GLB
+        // O usuário deve colocar o arquivo 'enemy.glb' em public/models/
+        el.setAttribute('gltf-model', 'url(/models/enemy.glb)');
+
+        // Tocar todas as animações disponíveis no modelo (loop)
+        el.setAttribute('animation-mixer', '');
+
+        // Ajuste de escala (pode variar dependendo do modelo, deixei um padrão razoável)
+        el.setAttribute('scale', '0.5 0.5 0.5');
 
         // Classe para detecção
         el.classList.add('enemy');
@@ -43,7 +42,7 @@ AFRAME.registerComponent('spawner', {
 
         el.setAttribute('position', { x, y, z });
 
-        // Animação de flutuar
+        // Animação de flutuar (mantida para dar movimento extra)
         el.setAttribute('animation', {
             property: 'position',
             to: `${x} ${y + 0.2} ${z}`,

@@ -1,4 +1,5 @@
 import 'aframe';
+import 'aframe-extras';
 import './src/components/spawner.js';
 import './src/components/weapon.js';
 import './src/components/explosion.js';
