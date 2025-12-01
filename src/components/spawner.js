@@ -16,31 +16,9 @@ AFRAME.registerComponent('spawner', {
         ];
 
         this.trashModels = [
-            'lixo_lata.glb', 'lixo_saco.glb', 'lixo_balde.glb', 'lixo_lata2.glb',
-            'lixo_lata3.glb', 'lixo_lata4.glb', 'lixo_lata5.glb', 'lixo_garrafa.glb',
-            'lixo_garrafa2.glb'
-        ];
-
-        // Escalas personalizadas
-        this.customScales = {
-            'peixe_palhaco.glb': '0.1 0.1 0.1',
-            'peixe_betta.glb': '0.25 0.25 0.25', // Metade de 0.5
-            'lixo_lata5.glb': '0.05 0.05 0.05', // Metade de 0.1
-            'lixo_garrafa2.glb': '0.025 0.025 0.025', // 4x menor que 0.1
-            'lixo_saco.glb': '0.1 0.1 0.1',
-            'lixo_lata3.glb': '0.1 0.1 0.1',
-            'lixo_lata4.glb': '0.1 0.1 0.1',
-            'lixo_garrafa.glb': '0.025 0.025 0.025' // 4x menor que 0.1
-        };
-    },
-
-    tick: function (time, timeDelta) {
-        this.timer += timeDelta;
-        if (this.timer >= this.data.interval) {
-            this.trySpawn();
             this.timer = 0;
-        }
-    },
+    }
+},
 
     trySpawn: function () {
         const fishCount = document.querySelectorAll('.fish').length;
