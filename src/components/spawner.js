@@ -3,7 +3,8 @@ AFRAME.registerComponent('spawner', {
         interval: { type: 'number', default: 1000 }, // Checa a cada 1 segundo
         range: { type: 'number', default: 5 },
         maxFish: { type: 'number', default: 4 },
-        maxTrash: { type: 'number', default: 3 }
+        maxTrash: { type: 'number', default: 3 },
+        enabled: { type: 'boolean', default: true }
     },
 
     init: function () {
@@ -34,6 +35,8 @@ AFRAME.registerComponent('spawner', {
     },
 
     tick: function (time, timeDelta) {
+        if (!this.data.enabled) return;
+
         this.timer += timeDelta;
         if (this.timer >= this.data.interval) {
             this.trySpawn();
