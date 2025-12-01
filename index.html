@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jogo de Tiro RA</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="ui-layer">
+      <div id="score-board">Pontos: <span id="score">0</span></div>
+      <button id="shoot-btn">ATIRAR</button>
+    </div>
+
+    <a-scene
+      embedded
+      ar-hit-test="target: #reticle; type: map;"
+      renderer="colorManagement: true;"
+      xr-mode-ui="enabled: true;"
+    >
+      <!-- Gerenciador do Jogo -->
+      <a-entity game-manager></a-entity>
+
+      <!-- Spawner de Inimigos -->
+      <a-entity spawner="interval: 2000; range: 5"></a-entity>
+
+      <!-- Câmera com Raycaster para o tiro -->
+      <a-entity id="rig">
+        <a-camera position="0 1.6 0" look-controls="enabled: false">
+          <a-entity
+            id="weapon"
+            weapon
+            raycaster="objects: .enemy; far: 20; showLine: false"
+            position="0 0 -0.5"
+          ></a-entity>
+          <a-cursor visible="false"></a-cursor>
+        </a-camera>
+      </a-entity>
+      
+      <!-- Luzes -->
+      <a-light type="ambient" intensity="0.5"></a-light>
+      <a-light type="directional" position="1 2 3" intensity="1"></a-light>
+    </a-scene>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
