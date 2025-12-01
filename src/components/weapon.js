@@ -2,33 +2,70 @@ AFRAME.registerComponent('weapon', {
     init: function () {
         this.shootBtn = document.getElementById('shoot-btn');
         this.shootBtn.addEventListener('click', this.shoot.bind(this));
-
-        // Som de tiro (opcional, usando oscilador simples se não houver arquivo)
-        // Para simplificar, vamos apenas logar por enquanto ou usar Web Audio API simples
     },
 
     shoot: function () {
-        // Raycaster já está configurado na entidade
         const raycaster = this.el.components.raycaster;
-
-        // Atualizar raycaster para garantir que pegue a posição atual
         raycaster.refreshObjects();
-
         const intersections = raycaster.intersections;
 
-        if (intersections.length > 0) {
-            // Pegar o primeiro objeto atingido
-            const hitEl = intersections[0].object.el;
+        // Posição inicial (arma/câmera)
+        const startPos = new THREE.Vector3();
+        this.el.object3D.getWorldPosition(startPos);
 
-            if (hitEl.classList.contains('enemy')) {
-                this.destroyTarget(hitEl);
-            }
+        // Posição final (alvo ou ponto distante)
+        let endPos = new THREE.Vector3();
+        let targetEl = null;
+
+        if (intersections.length > 0) {
+            // Acertou algo
+            endPos.copy(intersections[0].point);
+            targetEl = intersections[0].object.el;
         } else {
-            console.log('Errou!');
+            // Não acertou nada, atira para longe na direção da câmera
+            const direction = new THREE.Vector3();
+            this.el.object3D.getWorldDirection(direction);
+            direction.multiplyScalar(-1); // A-Frame cameras look down -Z
+            endPos.copy(startPos).add(direction.multiplyScalar(20));
         }
 
-        // Feedback visual do tiro (opcional)
+        // Criar o projétil visual
+        this.fireProjectile(startPos, endPos, targetEl);
         this.createMuzzleFlash();
+    },
+
+    fireProjectile: function (start, end, targetEl) {
+        const projectile = document.createElement('a-entity');
+        projectile.setAttribute('geometry', { primitive: 'sphere', radius: 0.05 });
+        projectile.setAttribute('material', { color: '#FFFF00', shader: 'flat' });
+        projectile.setAttribute('position', start);
+
+        this.el.sceneEl.appendChild(projectile);
+
+        // Calcular duração baseada na distância (velocidade constante)
+        const distance = start.distanceTo(end);
+        const speed = 20; // metros por segundo
+        // Garantir duração mínima para ser visível
+        const duration = Math.max((distance / speed) * 1000, 100);
+
+        // Animar posição
+        projectile.setAttribute('animation', {
+            property: 'position',
+            to: `${end.x} ${end.y} ${end.z}`,
+            dur: duration,
+            easing: 'linear'
+        });
+
+        // Evento ao terminar animação
+        setTimeout(() => {
+            // Remover projétil
+            if (projectile.parentNode) projectile.parentNode.removeChild(projectile);
+
+            // Se tinha um alvo, destruir agora (ao impacto)
+            if (targetEl && targetEl.classList.contains('enemy')) {
+                this.destroyTarget(targetEl);
+            }
+        }, duration);
     },
 
     destroyTarget: function (el) {
