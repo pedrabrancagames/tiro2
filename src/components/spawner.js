@@ -1,12 +1,14 @@
 AFRAME.registerComponent('spawner', {
     schema: {
-        interval: { type: 'number', default: 2000 },
-        range: { type: 'number', default: 5 }
+        interval: { type: 'number', default: 1000 }, // Checa a cada 1 segundo
+        range: { type: 'number', default: 5 },
+        maxFish: { type: 'number', default: 4 },
+        maxTrash: { type: 'number', default: 3 }
     },
 
     init: function () {
         this.timer = 0;
-        this.targets = [];
+        // this.targets = []; // Removed as per new code
 
         this.fishModels = [
             'peixe_betta.glb', 'carangueijo.glb', 'tubarao.glb', 'peixe_palhaco.glb',
@@ -19,44 +21,64 @@ AFRAME.registerComponent('spawner', {
             'lixo_garrafa2.glb'
         ];
 
-        // Escalas personalizadas para modelos que estão muito grandes
+        // Escalas personalizadas
         this.customScales = {
             'peixe_palhaco.glb': '0.1 0.1 0.1',
-            'lixo_lata5.glb': '0.1 0.1 0.1',
-            'lixo_garrafa2.glb': '0.1 0.1 0.1',
+            'peixe_betta.glb': '0.25 0.25 0.25', // Metade de 0.5
+            'lixo_lata5.glb': '0.05 0.05 0.05', // Metade de 0.1
+            'lixo_garrafa2.glb': '0.025 0.025 0.025', // 4x menor que 0.1
             'lixo_saco.glb': '0.1 0.1 0.1',
             'lixo_lata3.glb': '0.1 0.1 0.1',
             'lixo_lata4.glb': '0.1 0.1 0.1',
-            'lixo_garrafa.glb': '0.1 0.1 0.1'
+            'lixo_garrafa.glb': '0.025 0.025 0.025' // 4x menor que 0.1
         };
     },
 
     tick: function (time, timeDelta) {
         this.timer += timeDelta;
         if (this.timer >= this.data.interval) {
-            this.spawn();
+            this.trySpawn();
             this.timer = 0;
         }
     },
 
-    spawn: function () {
-        const el = document.createElement('a-entity');
-        const isFish = Math.random() > 0.5; // 50% de chance
+    trySpawn: function () {
+        const fishCount = document.querySelectorAll('.fish').length;
+        const trashCount = document.querySelectorAll('.trash').length;
 
+        let spawnType = null;
+
+        // Lógica de prioridade: tenta preencher o que falta
+        if (fishCount < this.data.maxFish && trashCount < this.data.maxTrash) {
+            // Ambos precisam, escolhe aleatório
+            spawnType = Math.random() > 0.5 ? 'fish' : 'trash';
+        } else if (fishCount < this.data.maxFish) {
+            spawnType = 'fish';
+        } else if (trashCount < this.data.maxTrash) {
+            spawnType = 'trash';
+        }
+
+        if (spawnType) {
+            this.spawn(spawnType);
+        }
+    },
+
+    spawn: function (type) {
+        const el = document.createElement('a-entity');
         let modelName;
 
-        if (isFish) {
+        if (type === 'fish') {
             modelName = this.fishModels[Math.floor(Math.random() * this.fishModels.length)];
-            el.classList.add('fish'); // Classe para identificar amigo
-            el.setAttribute('animation-mixer', ''); // Peixes são animados
+            el.classList.add('fish');
+            el.setAttribute('animation-mixer', '');
         } else {
             modelName = this.trashModels[Math.floor(Math.random() * this.trashModels.length)];
-            el.classList.add('trash'); // Classe para identificar inimigo (lixo)
+            el.classList.add('trash');
         }
 
         el.setAttribute('gltf-model', `url(/models/${modelName})`);
 
-        // Aplicar escala: usa a personalizada se existir, senão usa a padrão 0.5
+        // Aplicar escala
         const scale = this.customScales[modelName] || '0.5 0.5 0.5';
         el.setAttribute('scale', scale);
 
@@ -84,6 +106,7 @@ AFRAME.registerComponent('spawner', {
 
         this.el.sceneEl.appendChild(el);
     },
+    // Removed extra '}' here
 
     getRandomColor: function () {
         return '#FFFFFF';
