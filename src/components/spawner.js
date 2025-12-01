@@ -77,21 +77,33 @@ AFRAME.registerComponent('spawner', {
 
         el.setAttribute('gltf-model', `url(/models/${modelName})`);
 
-        // Aplicar escala
-        const scale = this.customScales[modelName] || '0.5 0.5 0.5';
-        el.setAttribute('scale', scale);
+        // Escala Alvo
+        const targetScaleStr = this.customScales[modelName] || '0.5 0.5 0.5';
+
+        // Iniciar invisível ou com escala 0 para evitar glitch de posição
+        el.setAttribute('scale', '0 0 0');
+        el.setAttribute('visible', 'true');
+
+        // Animação de Entrada (Pop-in)
+        el.setAttribute('animation__spawn', {
+            property: 'scale',
+            to: targetScaleStr,
+            dur: 800,
+            easing: 'easeOutElastic'
+        });
 
         // Posição Aleatória
         const angle = Math.random() * Math.PI * 2;
-        const radius = 2 + Math.random() * (this.data.range - 2);
+        const radius = 3 + Math.random() * (this.data.range - 3); // Raio mínimo aumentado para 3
         const x = Math.cos(angle) * radius;
         const z = Math.sin(angle) * radius;
         const y = 1 + Math.random() * 1.5;
 
         el.setAttribute('position', { x, y, z });
 
-        // Animação de flutuar
-        el.setAttribute('animation', {
+        // Animação de flutuar (Manter existente, renomear para evitar conflito se necessário, mas A-Frame suporta multiplas se propriedade for diferente)
+        // A animação de spawn é na escala, a de flutuar é na posição. Sem conflito.
+        el.setAttribute('animation__float', {
             property: 'position',
             to: `${x} ${y + 0.2} ${z}`,
             dir: 'alternate',
