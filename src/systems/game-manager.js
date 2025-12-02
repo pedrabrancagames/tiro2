@@ -38,6 +38,21 @@ AFRAME.registerComponent('game-manager', {
         // Inicialização
         this.loadHighScore();
         this.setGameState('MENU');
+
+        // Tentativa de auto-start (pode ser bloqueado pelo navegador)
+        // Se o usuário já tiver dado permissão anteriormente ou em contextos específicos
+        this.el.sceneEl.addEventListener('loaded', () => {
+            // Verificação básica se não estamos já em VR
+            if (!this.el.sceneEl.is('vr-mode')) {
+                // this.el.sceneEl.enterVR(); // Comentado pois geralmente falha sem interação e gera erro no console
+                // Em vez disso, vamos garantir que o clique no body funcione se o usuário clicar fora do botão
+                document.body.addEventListener('click', () => {
+                    if (!this.el.sceneEl.is('vr-mode') && this.state === 'MENU') {
+                        this.el.sceneEl.enterVR();
+                    }
+                }, { once: true });
+            }
+        });
     },
 
     setGameState: function (newState) {
@@ -66,6 +81,11 @@ AFRAME.registerComponent('game-manager', {
     },
 
     startGame: function () {
+        // Tentar entrar em modo AR/VR
+        if (this.el.sceneEl.checkHeadsetConnected() || this.el.sceneEl.isMobile) {
+            this.el.sceneEl.enterVR();
+        }
+
         this.score = 0;
         this.timeRemaining = this.data.gameDuration;
         this.updateScoreUI();
