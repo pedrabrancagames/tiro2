@@ -16,7 +16,7 @@ AFRAME.registerComponent('spawner', {
         ];
 
         this.trashModels = [
-            'lixo_lata.glb', 'lixo_saco.glb', 'lixo_balde.glb', 'lixo_lata2.glb',
+            'lixo_lata.glb', 'lixo_saco.glb',
             'lixo_lata4.glb', 'lixo_lata5.glb', 'lixo_garrafa.glb',
             'lixo_garrafa2.glb'
         ];
@@ -29,8 +29,6 @@ AFRAME.registerComponent('spawner', {
             'lixo_saco.glb': '0.015 0.015 0.015',
             'lixo_lata4.glb': '0.1 0.1 0.1',
             'lixo_garrafa.glb': '0.025 0.025 0.025',
-            'lixo_balde.glb': '1.0 1.0 1.0',
-            'lixo_lata2.glb': '1.0 1.0 1.0' // Aumentado 2x (era 0.5 padrão)
         };
     },
 
