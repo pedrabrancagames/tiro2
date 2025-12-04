@@ -41,8 +41,21 @@ AFRAME.registerComponent('weapon', {
     fireProjectile: function (start, end, targetEl) {
         const projectile = document.createElement('a-entity');
         projectile.setAttribute('geometry', { primitive: 'sphere', radius: 0.05 });
-        projectile.setAttribute('material', { color: '#FFFF00', shader: 'flat' });
+        projectile.setAttribute('material', {
+            color: '#40E0D0',
+            shader: 'flat',
+            emissive: '#40E0D0',
+            emissiveIntensity: 0.5
+        });
         projectile.setAttribute('position', start);
+
+        // Adicionar rastro de bolhas ao projétil
+        projectile.setAttribute('bubble-trail', {
+            enabled: true,
+            interval: 50,
+            bubbleSize: 0.04,
+            bubbleLife: 800
+        });
 
         this.el.sceneEl.appendChild(projectile);
 
@@ -76,10 +89,34 @@ AFRAME.registerComponent('weapon', {
         if (el.classList.contains('trash')) {
             // Lixo: Explode e ganha pontos
             el.setAttribute('explosion', '');
+
+            // Criar brilho mágico ao coletar lixo
+            const glowEntity = document.createElement('a-entity');
+            glowEntity.setAttribute('position', hitPosition);
+            glowEntity.setAttribute('magic-glow', {
+                color: '#F4D03F',
+                duration: 1200,
+                size: 0.6
+            });
+            this.el.sceneEl.appendChild(glowEntity);
+
             // Emitir evento com detalhes para o game-manager criar o texto flutuante
             this.el.sceneEl.emit('score-up', { position: hitPosition });
         } else if (el.classList.contains('fish')) {
             // Peixe: Não explode, perde pontos (penalidade)
+
+            // Criar partículas de água ao acertar peixe
+            const waterEntity = document.createElement('a-entity');
+            waterEntity.setAttribute('position', hitPosition);
+            waterEntity.setAttribute('water-particles', {
+                count: 15,
+                color: '#4FB3D9',
+                size: 0.08,
+                spread: 0.4,
+                duration: 1000
+            });
+            this.el.sceneEl.appendChild(waterEntity);
+
             this.el.sceneEl.emit('score-down', { position: hitPosition });
 
             // Som de splash/erro
